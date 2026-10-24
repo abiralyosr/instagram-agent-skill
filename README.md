@@ -69,6 +69,7 @@ out loud.
 | `/ig-dm` | The keyword delivery, the first message, the collab pitch, and the two follow-ups. Two. |
 | `/ig-repurpose` | One video, podcast or newsletter into a week of reels and carousels that each stand alone. |
 | `/ig-audit` | Post-mortem on what you already posted. Ranks by outlier multiple and sends per reach, not views. |
+| `/ig-montage` | The edit itself. Your rushes, photos, script and voice-over into a 1080x1920 Reel with FFmpeg: cuts on phrases, brand grade, Tunisian Arabic subtitles, voice cleanup, ducked music, -14 LUFS. Profiles for Abir Atib and Vitaya RELAX. |
 
 ## The five tools that actually run
 
@@ -323,6 +324,9 @@ skills/ig-human/humanize.py        the three cleaning passes
 skills/ig-human/detect.py          the five-check panel
 skills/ig-viral/swipe.py           outlier ranking and formula classification
 skills/ig-profile/rubric.json      the 100-point profile score
+skills/ig-montage/reelforge.py     the montage engine: probe, subs, plan, check, render
+skills/ig-montage/brands/          one brand.json per brand, plus fonts/, logo.png, optional LUT
+reels/                             one folder per Reel; only the recipe is committed
 templates/voice.md                 your voice profile. Fill this in first.
 ```
 
