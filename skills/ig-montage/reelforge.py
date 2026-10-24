@@ -70,6 +70,8 @@ VOICE_PRESETS = {
             "equalizer=f=250:t=q:w=1.2:g=-1,equalizer=f=9000:t=h:w=0.7:g=1.5",
     # leave the recording alone apart from rumble and level
     "clean": "highpass=f=70",
+    # the recording exactly as delivered: only the overall level moves, at the master
+    "none": "anull",
 }
 
 
@@ -836,6 +838,8 @@ def lint(pr, dry=False):
             E.append(f"montage de {total:.2f}s mais la voix finit à {vend:.2f}s : la fin serait coupée.")
     elif voice and not (pr.dir / voice).exists():
         (W if dry else E).append(f"voix off introuvable : {voice}.")
+    if ed.get("voice_preset") and ed["voice_preset"] not in VOICE_PRESETS:
+        E.append(f"voice_preset « {ed['voice_preset']} » inconnu ({', '.join(VOICE_PRESETS)}).")
     music = ed.get("music")
     if music:
         mi = probe.get(music.get("file"), {})
@@ -937,6 +941,8 @@ class Renderer:
         self.log, self.warn = [], []
         self.brand, self.edit = pr.brand, pr.edit
         self.probe = pr.probe["files"]
+        # a project may soften the brand look, e.g. footage that arrives already graded
+        self.look = {**self.brand["look"], **pr.edit.get("look", {})}
         self.shots = [dict(s) for s in pr.edit["shots"]]
         for s in self.shots:
             s["dur"] = frames(s["dur"])
@@ -990,7 +996,7 @@ class Renderer:
         W, H, D = self.W, self.H, s["dur"]
         kind = shot_kind(self.pr, s)
         out = self.w(f"shot_{i:02d}.mkv")
-        look = look_chain(self.brand["look"], s.get("grade"), self.lut, W)
+        look = look_chain(self.look, s.get("grade"), self.lut, W)
         tail = ["tpad=stop_mode=clone:stop_duration=2", f"trim=duration={D:.4f}", "setpts=PTS-STARTPTS",
                 "format=yuv420p", "setsar=1"]
         silent = ["-f", "lavfi", "-t", f"{D:.4f}", "-i", "anullsrc=r=48000:cl=stereo"]
@@ -999,7 +1005,7 @@ class Renderer:
             card = self.brand.get("end_card", {})
             logo = Path(self.brand["_dir"]) / card.get("logo", "logo.png")
             inputs = ["-f", "lavfi", "-i", f"color=c={hex_to_ff(card.get('background', '#111111'))}:s={W}x{H}:r={FPS}:d={D:.4f}"]
-            g = int(self.brand["look"].get("grain", 0))
+            g = int(self.look.get("grain", 0))
             vf = ([f"noise=c0s={g}:c0f=t+u"] if g else []) + tail
             if logo.exists():
                 inputs += ["-loop", "1", "-framerate", str(FPS), "-t", f"{D:.4f}", "-i", str(logo)]
@@ -1038,10 +1044,23 @@ class Renderer:
             pre.append(["-y", "-hide_banner", "-loglevel", "error", "-ss", f"{t_in:.3f}", "-t", f"{src_len:.3f}",
                         "-i", src, "-an", "-vf", f"vidstabdetect=shakiness=5:accuracy=15:result={trf}", "-f", "null", "-"])
             vf.append(f"vidstabtransform=input={trf}:smoothing=14:zoom=4:optzoom=0:interpol=bicubic")
+        if s.get("interpolate") and sp < 1.0:
+            # motion-compensated in-between frames, so slow motion from 30 fps footage stays fluid
+            vf.append(f"minterpolate=fps={math.ceil(FPS / sp)}:mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1")
+        vf += [f"setpts=(PTS-STARTPTS)/{sp}", f"fps={FPS}"]
         zoom = s.get("zoom", 1.0)
-        vf += [f"setpts=(PTS-STARTPTS)/{sp}", f"fps={FPS}",
-               f"scale={int(W * zoom)}:{int(H * zoom)}:force_original_aspect_ratio=increase:force_divisible_by=2:flags=lanczos",
-               f"crop={W}:{H}:(iw-{W})*{fx}:(ih-{H})*{fy}", *look, *tail]
+        if "zoom_to" in s:
+            # slow eased push (or pull) on a video shot, computed on a 2x frame to avoid stepping
+            n = int(round(D * FPS))
+            e = smoothstep(n)
+            z = f"{zoom}+({s['zoom_to']}-{zoom})*{e}"
+            vf += [f"scale={2 * W}:{2 * H}:force_original_aspect_ratio=increase:flags=lanczos",
+                   f"crop={2 * W}:{2 * H}:(iw-{2 * W})*{fx}:(ih-{2 * H})*{fy}",
+                   f"zoompan=z='{z}':x='(iw-iw/zoom)*{fx}':y='(ih-ih/zoom)*{fy}':d=1:s={W}x{H}:fps={FPS}"]
+        else:
+            vf += [f"scale={int(W * zoom)}:{int(H * zoom)}:force_original_aspect_ratio=increase:force_divisible_by=2:flags=lanczos",
+                   f"crop={W}:{H}:(iw-{W})*{fx}:(ih-{H})*{fy}"]
+        vf += [*look, *tail]
         gain = self.ambient_gain(s)
         use_src_audio = info.get("has_audio", True) and s.get("keep_audio", True) and gain > -60
         if use_src_audio:
@@ -1060,7 +1079,7 @@ class Renderer:
         """Chain the shots with cuts (concat) or transitions (xfade / acrossfade)."""
         parts, n = [], len(self.shots)
         for i in range(n):
-            norm = f"settb=AVTB,fps={FPS}" if kind == "v" else "aresample=48000"
+            norm = f"fps={FPS},settb=AVTB" if kind == "v" else "aresample=48000"
             parts.append(f"[{i}:{kind}]{norm}[{kind}in{i}]")
         cur, length = f"[{kind}in0]", self.shots[0]["dur"]
         for i in range(1, n):
@@ -1096,7 +1115,7 @@ class Renderer:
             lufs = self.probe.get(v, {}).get("lufs")
             gain = (A.get("voice_lufs", -16) - lufs) if lufs is not None else 0.0
             delay = int(float(self.edit.get("voice_offset", 0)) * 1000)
-            chain = VOICE_PRESETS[A.get("voice_preset", "warm")]
+            chain = VOICE_PRESETS[self.edit.get("voice_preset") or A.get("voice_preset", "warm")]
             split = "asplit=2[vo][vosc]" if music_idx is not None else "anull[vo]"
             parts.append(f"[{voice_idx}:a]{chain},volume={gain:.2f}dB,adelay={delay}:all=1,"
                          f"aformat=sample_rates=48000:channel_layouts=stereo,apad,atrim=0:{L:.4f},{split}")
@@ -1108,7 +1127,7 @@ class Renderer:
             gain = m.get("gain_db", (target - lufs) if lufs is not None else -12.0)
             fo = A.get("music_fade_out", 2.0)
             parts.append(f"[{music_idx}:a]aformat=sample_rates=48000:channel_layouts=stereo,"
-                         f"atrim=0:{L:.4f},asetpts=PTS-STARTPTS,volume={gain:.2f}dB,afade=t=in:d=0.6,"
+                         f"atrim=0:{L:.4f},asetpts=PTS-STARTPTS,volume={gain:.2f}dB,afade=t=in:d={m.get('fade_in', 0.6)},"
                          f"afade=t=out:st={max(0.0, L - fo):.3f}:d={fo},apad,atrim=0:{L:.4f}[mus0]")
             if voice_idx is not None:
                 parts.append(f"[mus0][vosc]sidechaincompress=threshold=0.025:ratio={A.get('duck_ratio', 6)}:"
@@ -1127,9 +1146,18 @@ class Renderer:
         say("1/5 plans (cadrage 9:16, étalonnage, mouvements photo)")
         for i, s in enumerate(self.shots):
             pre, cmd = self.shot_cmd(i, s)
+            # cache: a shot whose exact command already produced its file is not re-rendered
+            stamp = pr.work / f"shot_{i:02d}.cmd"
+            key = "\n".join(shlex.join(c) for c in pre + [cmd])
+            if not dry and (pr.dir / cmd[-1]).exists() and stamp.exists() and stamp.read_text() == key:
+                say(f"  plan {i + 1} : inchangé, réutilisé")
+                self.log.append("# " + shlex.join(["ffmpeg", *cmd]))
+                continue
             for p in pre:
                 ffrun(["ffmpeg", *p], pr.dir, dry, self.log)
             ffrun(["ffmpeg", *cmd], pr.dir, dry, self.log)
+            if not dry:
+                stamp.write_text(key)
 
         say("2/5 son direct des plans")
         parts, cur = self.fold("a")
