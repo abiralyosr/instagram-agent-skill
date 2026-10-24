@@ -1,0 +1,15 @@
+{
+  "brand": "abir-atib",
+  "title": "A044 bloom ugc",
+  "voice": null,
+  "voice_offset": 0.3,
+  "music": null,
+  "subtitles": {
+    "enabled": true,
+    "file": "subs.srt"
+  },
+  "texts": [],
+  "end_card": true,
+  "cover_at": null,
+  "shots": []
+}

@@ -1,0 +1,2 @@
+# Une ligne = un sous-titre, en darija tunisienne, tel que prononcé dans la voix off.
+# Les lignes qui commencent par # sont ignorées.
