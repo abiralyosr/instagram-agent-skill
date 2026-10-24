@@ -183,8 +183,9 @@ the brand's `titles`. `pos` is `top`, `center` or `bottom`.
 styles, and the end card. `brands/<slug>/fonts/` takes the brand's `.ttf`
 files, `brands/<slug>/logo.png` the logo (transparent PNG), and an optional
 `.cube` LUT goes next to it (set `look.lut`). Each profile has a
-`to_confirm` line: the Vitaya RELAX profile in particular is a starting
-hypothesis until the user confirms what the brand is and how it looks.
+`to_confirm` line for what is still missing. Read `copy_rules` when it is
+there: Vitaya RELAX sells an essential-oil blend used for headaches, so no
+on-screen text or subtitle may promise a cure or a guaranteed effect.
 
 ## Before you finish
 

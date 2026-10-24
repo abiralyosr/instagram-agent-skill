@@ -1,13 +1,14 @@
 {
   "name": "Vitaya RELAX",
-  "summary": "Marque bien-être et détente. Profil de départ prudent : image douce et lumineuse, rythme posé, voix aérée.",
-  "to_confirm": "Ce que vend exactement la marque, public, couleurs, logo (logo.png fond transparent), polices. Ce profil est une hypothèse à valider.",
+  "summary": "Mélange d'huiles essentielles en gouttes, flacon de 10 ml. Usage principal : accompagner les maux de tête et migraines ; aussi en aromathérapie pour la détente et le confort respiratoire. Image fraîche, calme et propre, rythme posé, voix douce.",
+  "copy_rules": "Produit de bien-être, pas un médicament : pas de promesse de guérison ni de délai garanti (« guérit la migraine », « effet en 5 minutes »). Parler de soulagement, de confort, d'un geste. Montrer le mode d'emploi réel (quelques gouttes, tempes, nuque, inhalation) et les précautions (usage externe, enfants, grossesse) si le Reel en parle. Les publicités Meta refusent les allégations de santé non prouvées.",
+  "to_confirm": "Couleurs exactes, logo (logo.png fond transparent), précautions d'emploi officielles à citer.",
   "look": {
     "contrast": 0.98,
     "brightness": 0.01,
-    "saturation": 0.96,
+    "saturation": 0.97,
     "gamma": 1.02,
-    "warmth": 0.015,
+    "warmth": 0.005,
     "denoise": "light",
     "sharpen": 0.25,
     "vignette": 0,
@@ -20,8 +21,19 @@
     "shot_max": 4.6,
     "photo_min": 2.4,
     "photo_zoom": 0.05,
-    "photo_moves": ["push_in", "drift_left", "drift_up", "pull_out", "drift_right"],
-    "allowed_transitions": ["cut", "crossfade", "fadeblack", "fadewhite"],
+    "photo_moves": [
+      "push_in",
+      "drift_left",
+      "drift_up",
+      "pull_out",
+      "drift_right"
+    ],
+    "allowed_transitions": [
+      "cut",
+      "crossfade",
+      "fadeblack",
+      "fadewhite"
+    ],
     "max_transition_ratio": 0.4,
     "transition_dur": 0.6,
     "tail": 0.9,
