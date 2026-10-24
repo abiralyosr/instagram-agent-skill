@@ -3,3 +3,7 @@ __pycache__/
 *.pyc
 .venv/
 *.tmp
+
+# Reels: keep the recipe (edit.json, script.txt, subs.srt), not the media or renders
+reels/**/inputs/
+reels/**/out/

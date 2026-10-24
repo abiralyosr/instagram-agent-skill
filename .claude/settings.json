@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/skills/ig-montage/reelforge.py\" doctor --quiet || true"
+          }
+        ]
+      }
+    ]
+  }
+}
