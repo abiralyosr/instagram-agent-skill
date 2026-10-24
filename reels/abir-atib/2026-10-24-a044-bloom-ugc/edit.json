@@ -14,13 +14,13 @@
   },
   "texts": [],
   "end_card": false,
-  "cover_at": 3.6,
+  "cover_at": 3.4,
   "shots": [
     {
       "src": "inputs/video/A044.mp4",
       "in": 0.0,
-      "dur": 2.6,
-      "speed": 0.646,
+      "dur": 2.45,
+      "speed": 0.686,
       "interpolate": true,
       "keep_audio": false,
       "_": "accroche « قبل ما تسكرولي »"
@@ -28,62 +28,87 @@
     {
       "src": "inputs/video/A044.mp4",
       "in": 1.87,
-      "dur": 3.1,
-      "speed": 0.61,
+      "dur": 2.52,
+      "speed": 0.75,
       "interpolate": true,
       "keep_audio": false,
-      "_": "main + A044 60 ML"
-    },
-    {
-      "src": "inputs/video/A044.mp4",
-      "in": 0.3,
-      "dur": 3.0,
-      "speed": 0.45,
-      "interpolate": true,
-      "zoom": 1.8,
-      "zoom_to": 1.92,
-      "focus_y": 0.0,
-      "keep_audio": false,
-      "_": "macro bouchon doré, sans texte"
-    },
-    {
-      "src": "inputs/video/A044.mp4",
-      "in": 3.9,
-      "dur": 2.5,
-      "speed": 0.612,
-      "interpolate": true,
-      "keep_audio": false,
-      "_": "étiquette « توقيع عبير الطيب »"
-    },
-    {
-      "src": "inputs/video/A044.mp4",
-      "in": 5.6,
-      "dur": 2.4,
-      "speed": 0.59,
-      "interpolate": true,
-      "keep_audio": false,
-      "_": "bouchon « تحبي تعرفي ريحتو؟ »"
+      "_": "main + A044 60 ML",
+      "transition": "crossfade",
+      "transition_dur": 0.25
     },
     {
       "src": "inputs/video/A044.mp4",
       "in": 8.6,
-      "dur": 3.3,
-      "zoom": 1.68,
-      "zoom_to": 1.55,
+      "dur": 2.4,
+      "zoom": 1.6,
       "focus_y": 1.0,
-      "focus_x": 0.47,
+      "focus_x": 0.15,
+      "focus_x_to": 0.75,
       "keep_audio": false,
-      "_": "flacon héros, recadré sous le CTA, recule vers le CTA"
+      "_": "flacon sur la table, panoramique gauche → droite (plan CTA, sous le texte)",
+      "transition": "crossfade",
+      "transition_dur": 0.25
+    },
+    {
+      "src": "inputs/video/A044.mp4",
+      "in": 3.9,
+      "dur": 2.04,
+      "speed": 0.75,
+      "interpolate": true,
+      "keep_audio": false,
+      "_": "étiquette « توقيع عبير الطيب »",
+      "transition": "crossfade",
+      "transition_dur": 0.25
+    },
+    {
+      "src": "inputs/video/A044.mp4",
+      "in": 9.2,
+      "dur": 2.0,
+      "zoom": 2.0,
+      "zoom_to": 2.1,
+      "focus_x": 0.85,
+      "focus_y": 0.75,
+      "keep_audio": false,
+      "_": "enseigne abir.atib + bord du flacon",
+      "transition": "crossfade",
+      "transition_dur": 0.25
+    },
+    {
+      "src": "inputs/video/A044.mp4",
+      "in": 5.6,
+      "dur": 1.89,
+      "speed": 0.751,
+      "interpolate": true,
+      "keep_audio": false,
+      "_": "vaporisateur « تحبي تعرفي ريحتو؟ »",
+      "transition": "crossfade",
+      "transition_dur": 0.25
+    },
+    {
+      "src": "inputs/video/A044.mp4",
+      "in": 10.0,
+      "dur": 2.3,
+      "zoom": 1.8,
+      "zoom_to": 1.98,
+      "focus_x": 0.365,
+      "focus_y": 0.777,
+      "keep_audio": false,
+      "_": "étiquette « 60 ml » en poussée lente",
+      "transition": "crossfade",
+      "transition_dur": 0.25
     },
     {
       "src": "inputs/video/A044.mp4",
       "in": 7.2,
-      "dur": 6.6,
-      "speed": 0.8,
+      "dur": 9.15,
+      "speed": 0.578,
+      "interpolate": true,
+      "zoom": 1.0,
+      "zoom_to": 1.05,
       "transition": "crossfade",
-      "transition_dur": 0.5,
+      "transition_dur": 0.25,
       "keep_audio": false,
-      "_": "CTA d'origine"
+      "_": "CTA d'origine, poussée très lente"
     }
   ],
   "voice_preset": "none",
@@ -97,5 +122,5 @@
     "sharpen": 0.3,
     "denoise": "light"
   },
-  "_notes": "Plan B : source = Reel déjà monté (textes incrustés). Flashs blancs d'origine retirés. Inserts recadrés pour exclure tout texte incrusté. Pas de sous-titres : texte de la voix non fourni."
+  "_notes": "v2 : chaque plan en mouvement une seule fois à ~0,75x ; trois cadrages distincts du plan fixe du CTA ; liaisons en fondu court 0,25 s à la demande (coupes jugées trop sèches) ; impact sonore sur l'arrivée du CTA."
 }

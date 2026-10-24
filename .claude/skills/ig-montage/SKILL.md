@@ -146,6 +146,7 @@ Shot fields:
 | `speed` | 0.5 for slow motion (best from 60 fps footage), up to 2 |
 | `interpolate` | with `speed` < 1: motion-compensated frames, so slow motion from 30 fps footage stays fluid (check edges and hands in the preview) |
 | `zoom_to` | with `zoom`: an eased push from `zoom` to `zoom_to` over the shot, e.g. 1.0 → 1.08; also the way to crop burned-in text out of a frame |
+| `focus_x_to`, `focus_y_to` | an eased pan of the crop window over the shot (with `zoom` > 1), e.g. 0.2 → 0.7 |
 | `stabilize` | two-pass vidstab for handheld shots |
 | `keep_audio`, `audio_gain_db` | real sound from the clip; default is the brand's ambient level |
 | `move`, `amount` | photos: `push_in`, `pull_out`, `drift_left/right/up/down`, `static`, and the zoom amount |

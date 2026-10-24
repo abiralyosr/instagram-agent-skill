@@ -1049,14 +1049,16 @@ class Renderer:
             vf.append(f"minterpolate=fps={math.ceil(FPS / sp)}:mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1")
         vf += [f"setpts=(PTS-STARTPTS)/{sp}", f"fps={FPS}"]
         zoom = s.get("zoom", 1.0)
-        if "zoom_to" in s:
-            # slow eased push (or pull) on a video shot, computed on a 2x frame to avoid stepping
+        if any(k in s for k in ("zoom_to", "focus_x_to", "focus_y_to")):
+            # slow eased push, pull or pan on a video shot, computed on a 2x frame to avoid stepping
             n = int(round(D * FPS))
             e = smoothstep(n)
-            z = f"{zoom}+({s['zoom_to']}-{zoom})*{e}"
+            z = f"{zoom}+({s.get('zoom_to', zoom)}-{zoom})*{e}"
+            px = f"({fx}+({s.get('focus_x_to', fx)}-{fx})*{e})"
+            py = f"({fy}+({s.get('focus_y_to', fy)}-{fy})*{e})"
             vf += [f"scale={2 * W}:{2 * H}:force_original_aspect_ratio=increase:flags=lanczos",
-                   f"crop={2 * W}:{2 * H}:(iw-{2 * W})*{fx}:(ih-{2 * H})*{fy}",
-                   f"zoompan=z='{z}':x='(iw-iw/zoom)*{fx}':y='(ih-ih/zoom)*{fy}':d=1:s={W}x{H}:fps={FPS}"]
+                   f"crop={2 * W}:{2 * H}:(iw-{2 * W})*0.5:(ih-{2 * H})*0.5",
+                   f"zoompan=z='{z}':x='(iw-iw/zoom)*{px}':y='(ih-ih/zoom)*{py}':d=1:s={W}x{H}:fps={FPS}"]
         else:
             vf += [f"scale={int(W * zoom)}:{int(H * zoom)}:force_original_aspect_ratio=increase:force_divisible_by=2:flags=lanczos",
                    f"crop={W}:{H}:(iw-{W})*{fx}:(ih-{H})*{fy}"]
